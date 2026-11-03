@@ -40,9 +40,21 @@ On the shared LLM evaluation subsets:
 | Notebook | Contents |
 |---|---|
 | `01_data_and_svm_baseline.ipynb` | Data loading, cleaning, splits, TF-IDF + SVM baseline |
-| `02_banglabert_finetuning.ipynb` | BanglaBERT fine-tuning over 3 seeds |
+| `02_banglabert_finetuning.ipynb` | BanglaBERT fine-tuning over 3 seeds (numbers reported above) |
+| `02b_banglabert_improved.ipynb` | Improved BanglaBERT recipe: 512 tokens with head + tail truncation, layer-wise LR decay, seed ensemble (settings `fine_tuned_v2` / `fine_tuned_v2_ens`) |
 | `03_llm_prompting_{llama,gemma,qwen}.ipynb` | Zero-shot and few-shot prompting per LLM |
 | `04_results.ipynb` | Results tables, cross-dataset drop, error analysis |
+
+## Improved BanglaBERT (`02b`)
+
+`02b_banglabert_improved.ipynb` targets BanglaBERT's weak spot: its roughly 13-point drop on BFN-2025. Compared with `02`, it:
+
+- reads 512 tokens instead of 256, keeping both the start and the end of long articles (head + tail truncation)
+- uses layer-wise learning-rate decay (0.9), so lower layers keep more of their pre-trained knowledge
+- skips weight decay on biases and LayerNorm
+- also reports a 3-seed ensemble (the average of P(Fake) over the seeds)
+
+`02` is unchanged, so the numbers above stay reproducible. The new runs appear in `04_results.ipynb` as extra rows. These settings have not yet been measured on the real data. Keep them only if they beat `fine_tuned` on the validation split.
 
 ## Running
 
